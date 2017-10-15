@@ -231,7 +231,7 @@ def run(pwd_num):
 def main():
     print(banner)
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ht:p:u:d:s:q", ["help", "target=", "port=", "user=", "dictionary=", "seconds=", "quiet"])
+        opts, args = getopt.getopt(sys.argv[1:], "ht:p:u:d:s:q:r", ["help", "target=", "port=", "user=", "dictionary=", "seconds=", "quiet", "starttry="])
     except getopt.GetoptError as err:
         error(err)
         sys.exit(2)
@@ -261,6 +261,8 @@ def main():
             dictionary = arg
         elif opt in ("-s", "--seconds"):
             seconds = arg
+        elif opt in ("-r", "--starttry"):
+            starttry = int(arg)
         elif opt in ("-q", "--quiet"):
             quietmode = True
         else:
@@ -279,6 +281,8 @@ def main():
         user = 'admin'
     if not seconds:
         seconds = 1
+    if not starttry:
+        starttry = 1;
 
     print("[*] Starting bruteforce attack...")
     print("-" * 33)
@@ -300,6 +304,9 @@ def main():
 
     items = 1
     for password in dictFile.readlines():
+        if items < starttry:
+            items += 1
+            continue
         password = password.strip('\n\r ')
         s = None
         for res in socket.getaddrinfo(target, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
